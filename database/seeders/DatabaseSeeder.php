@@ -4,8 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Models\Property;
-use App\Models\PropertyType;
-use App\Models\Location;
 use App\Models\Media;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -26,6 +24,7 @@ class DatabaseSeeder extends Seeder
         User::factory()->admin()->create([
             'name' => 'Admin User',
             'email' => 'admin@example.com',
+            'password' => bcrypt('11111111'),
         ]);
 
         // Create agent users

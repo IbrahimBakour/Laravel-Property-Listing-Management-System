@@ -6,7 +6,7 @@
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
     <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Edit Property</h2>
 
-    <form action="{{ route('properties.update', $property) }}" method="POST" class="max-w-2xl">
+    <form action="{{ route('properties.update', $property) }}" method="POST" enctype="multipart/form-data" class="max-w-2xl">
         @csrf
         @method('PUT')
 
@@ -86,9 +86,17 @@
             <select id="status" name="status" required class="w-full px-4 py-2 border  dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white @error('status') border-red-500 @enderror">
                 <option value="For Sale" @selected(old('status', $property->status) == 'For Sale')>For Sale</option>
                 <option value="For Rent" @selected(old('status', $property->status) == 'For Rent')>For Rent</option>
-                <option value="Sold" @selected(old('status', $property->status) == 'Sold')>Sold</option>
             </select>
             @error('status')<span class="text-red-500 text-sm">{{ $message }}</span>@enderror
+        </div>
+
+        <!-- Images -->
+        <div class="mb-6">
+            <label for="images" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Add Images</label>
+            <input type="file" id="images" name="images[]" accept="image/*" multiple class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white @error('images.*') border-red-500 @enderror">
+            <p class="text-xs text-gray-500 mt-1">Upload additional images (JPG, PNG, WEBP up to 2MB each). The first new image becomes primary if none exists.</p>
+            @error('images')<span class="text-red-500 text-sm">{{ $message }}</span>@enderror
+            @error('images.*')<span class="text-red-500 text-sm">{{ $message }}</span>@enderror
         </div>
 
         <!-- Submit -->

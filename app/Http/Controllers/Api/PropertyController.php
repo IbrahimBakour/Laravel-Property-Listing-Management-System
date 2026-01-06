@@ -71,6 +71,8 @@ class PropertyController extends Controller
             'status' => 'required|in:For Sale,For Rent,Sold',
             'property_type_id' => 'required|exists:property_types,id',
             'location_id' => 'required|exists:locations,id',
+            'images' => 'sometimes|array',
+            'images.*' => 'sometimes|file|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         $validated['agent_id'] = auth()->id();
@@ -98,6 +100,8 @@ class PropertyController extends Controller
             'status' => 'sometimes|in:For Sale,For Rent,Sold',
             'property_type_id' => 'sometimes|exists:property_types,id',
             'location_id' => 'sometimes|exists:locations,id',
+            'images' => 'sometimes|array',
+            'images.*' => 'sometimes|file|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         $property->update($validated);

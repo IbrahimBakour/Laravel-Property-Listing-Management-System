@@ -7,6 +7,11 @@ Route::get('/', function () {
     return redirect()->route('properties.index');
 });
 
+// Alias for the property listing page
+Route::get('/property-listing', function () {
+    return redirect()->route('properties.index');
+})->name('property.listing');
+
 Route::get('/properties', [PropertyController::class, 'index'])->name('properties.index');
 Route::get('/properties/create', [PropertyController::class, 'create'])->name('properties.create')->middleware('auth');
 Route::post('/properties', [PropertyController::class, 'store'])->name('properties.store')->middleware('auth');

@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Property;
 use App\Models\PropertyType;
 use App\Models\Location;
+use App\Models\Media;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class PropertyController extends Controller
@@ -41,6 +43,8 @@ class PropertyController extends Controller
             'status' => 'required|in:For Sale,For Rent,Sold',
             'property_type_id' => 'required|exists:property_types,id',
             'location_id' => 'required|exists:locations,id',
+            'images' => 'sometimes|array',
+            'images.*' => 'sometimes|file|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         $propertyType = PropertyType::find($validated['property_type_id']);
@@ -53,6 +57,18 @@ class PropertyController extends Controller
 
         $validated['agent_id'] = auth()->id();
         $property = Property::create($validated);
+
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $index => $image) {
+                $storedPath = $image->store('properties', 'public');
+                Media::create([
+                    'property_id' => $property->id,
+                    'file_path' => 'storage/' . $storedPath,
+                    'file_type' => $image->getMimeType(),
+                    'is_primary' => $index === 0,
+                ]);
+            }
+        }
 
         return redirect()
             ->route('properties.show', $property)
@@ -87,6 +103,8 @@ class PropertyController extends Controller
             'status' => 'required|in:For Sale,For Rent,Sold',
             'property_type_id' => 'required|exists:property_types,id',
             'location_id' => 'required|exists:locations,id',
+            'images' => 'sometimes|array',
+            'images.*' => 'sometimes|file|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         $propertyType = PropertyType::find($validated['property_type_id']);
@@ -98,6 +116,19 @@ class PropertyController extends Controller
         }
 
         $property->update($validated);
+
+        if ($request->hasFile('images')) {
+            $hasPrimary = $property->media()->where('is_primary', true)->exists();
+            foreach ($request->file('images') as $index => $image) {
+                $storedPath = $image->store('properties', 'public');
+                Media::create([
+                    'property_id' => $property->id,
+                    'file_path' => 'storage/' . $storedPath,
+                    'file_type' => $image->getMimeType(),
+                    'is_primary' => $hasPrimary ? false : $index === 0,
+                ]);
+            }
+        }
 
         return redirect()
             ->route('properties.show', $property)
